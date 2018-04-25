@@ -4,10 +4,10 @@ from copy import deepcopy
 from random import randint 
 
 # parameters
-depth = 7
-mc_sim = 10
+depth = 7	  # Depth of the Minimax Tree to search for 
+mc_sim = 10   # Monte Carlo Simulation Number
 
-###############################
+#############################################################################################################
 
 def extract_string(board_string):
     """ Extract the board state and the last move from the input string
@@ -39,7 +39,7 @@ def extract_string(board_string):
     
     return board, last_move
     
-#####################################
+#############################################################################################################
 
 # class board for applying moves, determining available moves and evaluating the board.
 
@@ -75,7 +75,7 @@ class Board:
         return None
     
     def available_moves(self, board_state, last_move):
-        # Computes all the available moves given the board_state and the previous move 
+        # Computes all available moves given the board_state and the previous move 
         moves = []
         locations = []
         if last_move !=  None:
@@ -102,7 +102,7 @@ class Board:
             if len(moves) > 0:
                 return moves 
                 
-        # all zeros are valid moves 
+        # All zeros are valid moves to be played
         for x in range(1, self.size + 1):
             for y in range(1, self.size - x + 2):
                 if board_state[self.size + 1 - x][y] == 0: 
@@ -116,7 +116,8 @@ class Board:
             the score of current state: an int between 0 and mc_sim 
         """
         score = 0 
-        for i in range(mc_sim):
+		# Begin Monte Carlo Simulation
+        for i in range(mc_sim):  
             sim_board_state = deepcopy(board_state)
             ran_move = move
             while not self.has_lost(sim_board_state, ran_move):
@@ -136,7 +137,8 @@ class Board:
         """
         surround = self._surround_colours(board_state, move)
         for i in range(6):
-            if move[0] * surround[i-1] * surround[i] == 6:
+			# Check if there is loser by multiplying the color numbers
+            if move[0] * surround[i-1] * surround[i] == 6:   
                 return True
         return False
         
@@ -176,10 +178,12 @@ def min_max_alpha_beta(board, board_state, last_move, side, max_depth,
             if max_depth <= 1:
                 score = board.evaluate(new_board_state, move, -side)
             else:
+			# Reversing the side of MiniMax of algorithm and contining the search recursively!
                 score, _ = min_max_alpha_beta(board, new_board_state, move, -side, 
                                               max_depth - 1, alpha,
                                               beta)
-        if side > 0:
+        # Alph-Beta Pruninig 
+		if side > 0:
             if score > alpha:
                 alpha = score
                 best_score_move = move

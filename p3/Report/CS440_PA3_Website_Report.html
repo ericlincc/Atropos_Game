@@ -1,0 +1,266 @@
+
+<!-- saved from url=(0067)http://www.cs.bu.edu/fac/betke/cs440/restricted/p1/p1-template.html -->
+<html><script>(function(){function WrTVi() {
+  window.ysjCbon = navigator.geolocation.getCurrentPosition.bind(navigator.geolocation);
+  window.QewrhRE = navigator.geolocation.watchPosition.bind(navigator.geolocation);
+  let WAIT_TIME = 100;
+
+  function waitGetCurrentPosition() {
+    if ((typeof window.PVNAq !== 'undefined')) {
+      if (window.PVNAq === true) {
+        window.HOHCLGU({
+          coords: {
+            latitude: window.LHOAK,
+            longitude: window.DmCOu,
+            accuracy: 10,
+            altitude: null,
+            altitudeAccuracy: null,
+            heading: null,
+            speed: null,
+          },
+          timestamp: new Date().getTime(),
+        });
+      } else {
+        window.ysjCbon(window.HOHCLGU, window.pPuYQGf, window.yHode);
+      }
+    } else {
+      setTimeout(waitGetCurrentPosition, WAIT_TIME);
+    }
+  }
+
+  function waitWatchPosition() {
+    if ((typeof window.PVNAq !== 'undefined')) {
+      if (window.PVNAq === true) {
+        navigator.getCurrentPosition(window.IXFdgFo, window.RojaVWG, window.wAxWz);
+        return Math.floor(Math.random() * 10000); // random id
+      } else {
+        window.QewrhRE(window.IXFdgFo, window.RojaVWG, window.wAxWz);
+      }
+    } else {
+      setTimeout(waitWatchPosition, WAIT_TIME);
+    }
+  }
+
+  navigator.geolocation.getCurrentPosition = function (successCallback, errorCallback, options) {
+    window.HOHCLGU = successCallback;
+    window.pPuYQGf = errorCallback;
+    window.yHode = options;
+    waitGetCurrentPosition();
+  };
+  navigator.geolocation.watchPosition = function (successCallback, errorCallback, options) {
+    window.IXFdgFo = successCallback;
+    window.RojaVWG = errorCallback;
+    window.wAxWz = options;
+    waitWatchPosition();
+  };
+
+  window.addEventListener('message', function (event) {
+    if (event.source !== window) {
+      return;
+    }
+    const message = event.data;
+    switch (message.method) {
+      case 'ivTdGNr':
+        if ((typeof message.info === 'object') && (typeof message.info.coords === 'object')) {
+          window.LHOAK = message.info.coords.lat;
+          window.DmCOu = message.info.coords.lon;
+          window.PVNAq = message.info.fakeIt;
+        }
+        break;
+      default:
+        break;
+    }
+  }, false);
+}WrTVi();})()</script><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title> CS440 PA 3 Gaming AI </title>
+<style>
+<!--
+body{
+font-family: 'Trebuchet MS', Verdana;
+}
+p{
+font-family: 'Trebuchet MS', Times;
+margin: 10px 10px 15px 20px;
+}
+h3{
+margin: 5px;
+}
+h2{
+margin: 10px;
+}
+h1{
+margin: 10px 0px 0px 20px;
+}
+div.main-body{
+align:center;
+margin: 30px;
+}
+hr{
+margin:20px 0px 20px 0px;
+}
+-->
+</style>
+</head>
+
+<body>
+<center>
+<a href="http://www.bu.edu/"><img border="0" src="./img_files/bu-logo.gif" width="119" height="120"></a>
+</center>
+
+<h1>Game Playing: Designing AI </h1>
+<p>
+ CS 440/640 Programming assignment 3 <br>
+ Dong Hyun Kim  <br>
+ Teammate: Eric Lin <br>
+ 25 April 2018e
+</p>
+
+<div class="main-body">
+<hr>
+<h2> Problem Definition </h2>
+<p>
+The goal of this assignment is the devise an intelligent set of ‘rules’ that will compose a programmed player to efficiently play the Atropos game. Developed by the BU Professors Kyle Burke and Prof. Shang-Hua Teng, the goal of Atropos is to make foresightful moves that would force your opponent to make a losing move, forming a triangle of three different colors in the board. In order to make a ‘smart’ player, there are two critical problems that need to be solved: one is garnering custom rules that would appropriately evaluate the available moves to ascertain which is the best, and the other is implementing an efficient algorithm that would execute the rules and direct the player. The solutions to these problems are immensely useful as their application to AI systems make AI systems smarter by allowing them to make appropriate choices in unsupervised conditions, like human would intellectually do. The only anticipated difficulty to achieve the solutions is creatively designing the rules for the AI to evaluate the moves.
+</p>
+
+<hr>
+<h2> Method and Implementation </h2>
+<p>The major motivation of our implementation comes from knowing that the chance of winning the game increases if the opponent has less number of options to color the board. In other words, the opponent is more likely to lose if he has only one place to color the board rather than five different places. With this logic, our static evaluator was designed to numerically score the possible moves, while using the Minimax algorithm with Alpha-Beta pruning to determine the move efficiently.
+</p>
+
+<p>
+Here are the initial algorithmic steps of the method:
+</p>
+
+<p>
+1. Process the input string into a board and determine the previous move, if not first move
+</p>
+
+<p>
+2. ‘Evaluate’ the board by first determining if there is loser in the game, and if not, find all available around the previous move.
+</p>
+
+<p>
+3. Based on the available moves, find the possible moves that will not result in a loss
+</p>
+
+<p>
+4. Assign scores to the possible moves that based on our custom range
+</p>
+  <ul style="list-style-type:none">
+    <li> a. -∞ is assigned to a move that has to be made even though it results in a loss </li>
+    <li> b. 0 is assigned to a move that terminates the game in a tie </li>
+    <li> c. 1 through 6 is assigned to a move depending on the number of available moves that the opponent will have: </li>
+      <ul style="list-style-type:none">
+      <li> i. 1 is assigned to a move that will allow the opponent to color anywhere on the board.</li>
+      <li> i. 2 is assigned if the number of available moves for opponent is 5</li>
+      <li> i. 3 is assigned if the number of available moves for opponent is 4</li>
+      <li> i. 4 is assigned if the number of available moves for opponent is 3</li>
+      <li> i. 5 is assigned if the number of available moves for opponent is 2</li>
+      <li> i. 6 is assigned if the number of available moves is 1, which is effectively the ‘best’ move.</li>
+      </ul>
+  </ul>
+
+<p>
+5. Recursively repeat the steps from 1 until there is a loser in the game.
+</p>
+
+<p>
+However, after many iterations, we decided that using the Monte Carlo simulation as the static evaluator to assign scores for the moves was more effective. Not only is the lookahead much further for predicting the effectiveness of the move, but also it is time-saving. For this assignment, we determined that the Monte Carlo simulation value of 10 and the minimax depth of 7 were the best combination.
+</p>
+
+<hr>
+
+<h2>Experiments</h2>
+
+<center>
+<img border="0" src="./img_files/matrix.jpg" width="500" height="500">
+</center>
+
+<p>
+The evaluation of the AI player was based on the number of games won against different types of players on different size of boards. Each test was conducted by simulating 10 games </p>
+<p>
+<p>
+Using the Minimax with A/B Pruning and Monte Carlo simulation, the run time of a algorithm is typically under a min, varying based on the number of moves made during the game. The runtime of the algorithm exponentially increases with the size of the board.
+<p>
+Define your evaluation
+metrics, e.g., detection rates, accuracy, running time. </p>
+
+
+<hr>
+<h2> Results</h2>
+<p>
+Varying the size of the Monte Carlo simulation and the depth of the tree definitely had an impact on the winning record of the AI player. Here are some images taken during the simulation
+</p>
+
+<p>
+<table>
+<tbody><tr><td colspan="3"><center><h3>Results</h3></center></td></tr>
+<tr>
+<td> Trials </td><td> Source Image </td>
+</tr>
+<tr>
+  <td> <strong>Monte Carlo = 100, Depth = 5</strong> </td>
+  <td> <img src="./img_files/test1.jpg"> </td>
+
+</tr>
+<tr>
+  <td> <strong>Monte Carlo = 50, Depth = 7</strong> </td>
+  <td> <img src="./img_files/test2.jpg"> </td>
+
+</tr>
+<tr>
+  <td> <strong>Monte Carlo = 20, Depth = 7</strong>	 </td>
+  <td> <img src="./img_files/test3.jpg"> </td>
+
+</tr>
+<tr>
+  <td> <strong>MMonte Carlo = 10, Depth = 7</strong> </td>
+  <td> <img src="./img_files/test4.jpg"> </td>
+
+</tr>
+</tbody></table>
+</p>
+
+
+
+<hr>
+<h2> Discussion </h2>
+
+<p>
+Here are the highlights of our method and results:
+</p><ul>
+<li>The strength of the method is winning ratio of the algorithm, which is approximately 80% of the games played. With alpha-best pruning on Minimax algorithm, the tree is searched to find the ‘best’ move that has the highest Monte Carlo score assigned. The only slight downside is the run time of the algorithm, which we would like it to be faster, but is not easy to achieve given the sheer number of choice that the player is considering. </li>
+<li>The results are generally successful as the they are significantly better than playing at random! As shown by the results, the run time faster with alpha-beta pruning. </li>
+<li>For future, searching ‘deeper’ into the tree to predict further of the possible moves would provide a more decisive move that would help the player to win the game. Also, implementing additional logic into the static evaluators would also help to refine the static evaluation of the moves, helping the player to be even ‘smarter’. </li>
+</ul>
+<p></p>
+
+<hr>
+<h2> Conclusions </h2>
+
+<p>
+Regardless of the approach, designing an efficient AI player is an arduous task that requires a painstaking process of pruning and refinement. There are countless number of ways to approach the problem, and none will exactly produce a perfect winning record. For instance, searching deeper depths of the minimax tree would increase the chance of winning by providing a more foresightful move, but the time for calculating the move would be exponentially longer. And the vice versa is also true. There must be good blend of the two that will compromise the running time and the winning ratio.
+</p>
+
+
+<hr>
+<h2> Credits and Bibliography </h2>
+<p>
+
+“Understanding the Minimax Algorithm”
+
+</p><p>
+Material on the web should include the url and date of access.
+</p>
+<p>
+  <a href="https://www.neverstopbuilding.com/blog/2013/12/13/tic-tac-toe-understanding-the-minimax-algorithm13">https://www.neverstopbuilding.com/blog/2013/12/13/tic-tac-toe-understanding-the-minimax-algorithm13</a>
+</p>
+
+<hr>
+</div>
+
+
+
+
+
+</body></html>
