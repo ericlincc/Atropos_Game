@@ -5,7 +5,7 @@ from random import randint
 
 # parameters
 depth = 5
-mc_sim = 100
+mc_sim = 50
 
 ###############################
 
@@ -205,8 +205,4 @@ if __name__ == "__main__":
     
     best_score, best_move = min_max_alpha_beta(board, cur_board_state, last_move, +1, depth)
     
-    if best_score == -10000:
-        print("Lost!")
-    
-    print("Best move: ")
     sys.stdout.write(str(best_move).replace(" ", ""))
