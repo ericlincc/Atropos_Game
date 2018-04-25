@@ -208,4 +208,4 @@ if __name__ == "__main__":
     if best_score == -10000:
         print("Lost!")
     
-    print("Best move: " + str(best_move))
+    print("Best move: " + str(best_move).replace(" ", ""))
