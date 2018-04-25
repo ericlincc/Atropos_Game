@@ -4,8 +4,8 @@ from copy import deepcopy
 from random import randint 
 
 # parameters
-depth = 5
-mc_sim = 50
+depth = 7
+mc_sim = 10
 
 ###############################
 
